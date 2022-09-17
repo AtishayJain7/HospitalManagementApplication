@@ -1,0 +1,247 @@
+//BY ATISHAY JAIN
+package HospitalManagementApplication;
+
+import java.util.*;
+import java.util.Calendar;
+import java.sql.*;
+
+
+public class HospitalManagement
+{
+    public static Scanner sc = null;
+    private Connection con=null;
+    private Statement stmt=null;
+    private ResultSet rs=null;
+    private PreparedStatement pstmt=null;
+
+
+    public Connection getCon() throws ClassNotFoundException, SQLException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/HospitalManagementApplication", "root", "vvrohini");
+        return con;
+    }
+
+    public void closeConnection() throws SQLException {
+            stmt.close();
+            con.close();
+            rs.close();
+    }
+
+    public void showTables() throws SQLException, ClassNotFoundException {
+            stmt=this.getCon().createStatement();
+            String q="show tables";
+            rs=stmt.executeQuery(q);
+            System.out.println(":: List Of All Tables ::");
+            while(rs.next()) {
+                System.out.println("\t"+rs.getString(1));
+            }
+            this.closeConnection();
+    }
+
+    public void insertRecordIntoTable() throws SQLException, ClassNotFoundException {
+    	Scanner scan = new Scanner(System.in);
+    	stmt=this.getCon().createStatement();
+            System.out.println("Enter Query To Insert The Record Into Table::");
+            //sc.nextLine();           
+            String q=scan.nextLine();
+            int res=stmt.executeUpdate(q);
+            System.out.println(res+" Record Inserted");
+		
+            con.close();
+            stmt.close();
+    }
+
+    public void selectAllRecordFromATable() throws SQLException, ClassNotFoundException {
+            
+    	System.out.println("Enter Table Name");
+    	sc.nextLine();
+            String tableName=sc.nextLine();
+
+            stmt=this.getCon().createStatement();
+            String q="select * from "+tableName;
+            rs=stmt.executeQuery(q);
+
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+
+            System.out.println();
+            System.out.println("==============================================");
+            System.out.println(":: All Records From "+tableName+" Table ::");
+            while(rs.next()) {
+                for(int i=1;i<=columnCount;i++)
+                    System.out.print(rs.getString(i)+"             ");
+                System.out.println();
+            }
+            System.out.println("==============================================");
+            System.out.println();
+            this.closeConnection();
+    }
+
+    public void selectAllRecordFromATable(String query) throws SQLException, ClassNotFoundException {
+        
+    	System.out.println("Enter Table Name");
+    	sc.nextLine();
+            String tableName=sc.nextLine();
+
+            stmt=this.getCon().createStatement();
+            //String q="select * from "+tableName;
+            rs=stmt.executeQuery(query);
+
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+
+            System.out.println();
+            System.out.println("==============================================");
+            System.out.println(":: All Records From "+tableName+" Table ::");
+            while(rs.next()) {
+                for(int i=1;i<=columnCount;i++)
+                    System.out.print(rs.getString(i)+"             ");
+                System.out.println();
+            }
+            System.out.println("==============================================");
+            System.out.println();
+            this.closeConnection();
+    }
+    
+    
+    public static void welcome(){
+        Calendar calendar = Calendar.getInstance();
+        System.out.println("\n--------------------------------------------------------------------------------");
+        System.out.println("            ***1 Welcome to Hospital Management System Project in Java ***");
+        System.out.println("--------------------------------------------------------------------------------");
+        System.out.print("Date: "+ calendar.get(Calendar.DATE)+ "."  + (calendar.get(Calendar.MONTH)+1)  + "." + calendar.get(Calendar.YEAR));
+        System.out.println("\t\t\t\t\t\t\tTime: " + calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND));
+    }
+
+    public static int menu(){
+        System.out.println("\n                  MAIN MENU");
+        System.out.println("---------------------------------------------------");
+        System.out.println("1.Doctors  2. Patients  3.Laboratories  4. Staff ");
+        System.out.println("---------------------------------------------------");
+        System.out.println("5. See available Tables");
+        System.out.println("6. EXIT");
+        sc=new Scanner(System.in);
+        System.out.println("Enter Your Choice:: ");
+        int choice=sc.nextInt();
+        sc.nextLine();
+        return choice;
+    }
+
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        HospitalManagement hm = new HospitalManagement();
+        welcome();
+
+        int  j, c1, s1, s2, s4, s6;
+        int flag=0;
+        while (true)
+        {
+            switch (menu()) {
+                case 1 -> {
+                    System.out.println("--------------------------------------------------------------------------------");
+                    System.out.println("                      **DOCTOR SECTION**");
+                    System.out.println("--------------------------------------------------------------------------------");
+                    s1 = 1;
+                    while (s1 == 1) {
+                        System.out.println("1.Add New Entry\n2.Existing Doctors List");
+                        c1 = sc.nextInt();
+                        switch (c1) {
+                            case 1 -> {
+                            	System.out.println("Enter id, name, specialization");
+                                hm.insertRecordIntoTable();
+                            }
+                            case 2 -> {
+                            	hm.selectAllRecordFromATable();
+                            }
+                        }
+                        System.out.println("\n1.Return to Back \n2.Main Menu:");
+                        s1 = sc.nextInt();
+                    }
+                }
+                case 2 -> {
+                    System.out.println("--------------------------------------------------------------------------------");
+                    System.out.println("                     **PATIENT SECTION**");
+                    System.out.println("--------------------------------------------------------------------------------");
+                    s2 = 1;
+                    while (s2 == 1) {
+                        System.out.println("1.Add New Entry\n2.Existing Patients List");
+                        c1 = sc.nextInt();
+                        switch (c1) {
+                            case 1 -> {
+                            	System.out.println("Enter name, disease, gender");
+                            	hm.insertRecordIntoTable();
+                            }
+                            case 2 -> {
+                            	hm.selectAllRecordFromATable();
+                            }
+                        }
+                        System.out.println("\n1.Return to Back \n2.Main Menu:");
+                        s2 = sc.nextInt();
+                    }
+                }
+                case 3 -> {
+                    s4 = 1;
+                    System.out.println("--------------------------------------------------------------------------------");
+                    System.out.println("                    **LABORATORY SECTION**");
+                    System.out.println("--------------------------------------------------------------------------------");
+                    while (s4 == 1) {
+                        System.out.println("1.Add New Entry \n2.Existing Laboratories List");
+                        c1 = sc.nextInt();
+                        switch (c1) {
+                            case 1 -> {
+                            	System.out.println("Enter facility, cost");
+                            	hm.insertRecordIntoTable();
+                            }
+                            case 2 -> {
+                            	hm.selectAllRecordFromATable();
+                            }
+                        }
+                        System.out.println("\n1.Return to Back \n2.Main Menu:");
+                        s4 = sc.nextInt();
+                    }
+                }
+                case 4 -> {
+                    s6 = 1;
+                    System.out.println("--------------------------------------------------------------------------------");
+                    System.out.println("                       **STAFF SECTION**");
+                    System.out.println("--------------------------------------------------------------------------------");
+                    while (s6 == 1) {
+                        System.out.println("1.Add New Entry \n2.Existing Nurses List\n3.Existing Workers List \n4.Existing Security List");
+                        c1 = sc.nextInt();
+                        switch (c1) {
+                            case 1 -> {
+                            	System.out.println("Enter id, name, designation, gender");
+                            	hm.insertRecordIntoTable();
+                            }
+                            case 2 -> {
+                            	hm.selectAllRecordFromATable("SELECT * FROM staff where designation = \"nurse\"\r\n"
+                            			+ "");
+                            }
+                            case 3 -> {
+                            	hm.selectAllRecordFromATable("SELECT * FROM staff where designation = \"worker\"\r\n"
+                            			+ "");
+                            }
+                            case 4 -> {
+                            	hm.selectAllRecordFromATable("SELECT * FROM staff where designation = \"security\"\r\n"
+                            			+ "");
+                            }
+                        }
+                        System.out.println("\n1.Return to Back \n2.Main Menu:");
+                        s6 = sc.nextInt();
+                    }
+                }
+                case 5 -> {
+                	hm.showTables();
+                	sc.nextLine();
+                }
+                case 6 -> {               	
+                	flag=1;
+                    System.out.println(":: Program Ended ::");
+                }
+                default -> System.out.println("Invalid Choice, Enter Again!!!");
+            }
+            if(flag==1){
+                break;
+            }
+        }
+    }
+}
